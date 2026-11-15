@@ -1,149 +1,97 @@
-"""
-Feature Engineering Module for PM2.5 Forecasting.
-Constructs temporal lags, rolling aggregations, day-of-year cyclical encoding,
-and meteorological differentials per station without temporal leakage.
-Master 1 Mini Project | Academic Year 2026-2027
-"""
+"""create past-only features without crossing station date gaps."""
 
 import numpy as np
 import pandas as pd
-from typing import List, Optional
-
-try:
-    from src.config import (
-        TARGET_COL,
-        STATION_COL,
-        DATE_COL,
-        METEO_COLS,
-        SATELLITE_GAS_COLS,
-        AOD_COLS,
-    )
-except ImportError:
-    from config import (
-        TARGET_COL,
-        STATION_COL,
-        DATE_COL,
-        METEO_COLS,
-        SATELLITE_GAS_COLS,
-        AOD_COLS,
-    )
 
 
-def add_cyclical_calendar_features(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Encodes temporal cyclical patterns (Section 5.3.4).
-    Day-of-year, month, and day-of-week encoded with sine and cosine
-    to preserve circular temporal continuity without data leakage.
-    """
-    df_out = df.copy()
-    date_dt = pd.to_datetime(df_out[DATE_COL])
-
-    # Day of Year
-    doy = date_dt.dt.dayofyear
-    df_out["doy_sin"] = np.sin(2 * np.pi * doy / 365.25)
-    df_out["doy_cos"] = np.cos(2 * np.pi * doy / 365.25)
-
-    # Month of Year
-    month = date_dt.dt.month
-    df_out["month_sin"] = np.sin(2 * np.pi * month / 12.0)
-    df_out["month_cos"] = np.cos(2 * np.pi * month / 12.0)
-
-    # Day of Week (Weekly cycles §5.2)
-    dow = date_dt.dt.dayofweek
-    df_out["dow_sin"] = np.sin(2 * np.pi * dow / 7.0)
-    df_out["dow_cos"] = np.cos(2 * np.pi * dow / 7.0)
-
-    return df_out
+def add_calendar_columns(clean):
+    """add month, year, season, and wind speed for exploration."""
+    clean["month"] = clean["date"].dt.month
+    clean["year"] = clean["date"].dt.year
+    clean["season"] = clean["month"].map({12: "winter", 1: "winter", 2: "winter", 3: "spring", 4: "spring", 5: "spring", 6: "summer", 7: "summer", 8: "summer", 9: "autumn", 10: "autumn", 11: "autumn"})
+    clean["wind_speed"] = np.sqrt(clean["wind_u"] ** 2 + clean["wind_v"] ** 2)
+    clean["wind_group"] = pd.qcut(clean["wind_speed"], q=2, labels=["low wind", "high wind"])
+    return clean
 
 
-def add_missingness_indicators(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Adds binary missingness indicators for Sentinel-5P gas columns (Section 5.3.1).
-    Helps models distinguish genuine physical zero/low from unobserved sensor passes.
-    """
-    df_out = df.copy()
-    for col in SATELLITE_GAS_COLS:
-        if col in df_out.columns:
-            df_out[f"{col}_is_missing"] = df_out[col].isnull().astype(int)
-    return df_out
+def add_gap_safe_lags(features, column, lags):
+    """add lags only when the station dates are exactly consecutive."""
+    for lag in lags:
+        name = column + "_lag_" + str(lag)
+        features[name] = features.groupby("sensor_name")[column].shift(lag)
+        day_difference = features.groupby("sensor_name")["date"].diff(lag).dt.days
+        features.loc[day_difference != lag, name] = np.nan
+    return features
 
 
-def create_station_temporal_features(
-    df: pd.DataFrame,
-    lags: List[int] = [1, 2, 3],
-    rolling_windows: List[int] = [3, 7],
-    max_gap_days: int = 1,
-) -> pd.DataFrame:
-    """
-    Creates station-specific past-only lag and rolling features (Section 5.3.4).
-    Guarantees:
-    1. Features are grouped per-station (never leaking across sensors).
-    2. Consecutive dates only: multi-day observation gaps are not bridged.
-    3. Excludes same-day target to prevent nowcasting target leakage.
-    """
-    df_out = df.copy()
-    df_out["date_dt"] = pd.to_datetime(df_out[DATE_COL])
-    df_out = df_out.sort_values(by=[STATION_COL, "date_dt"]).reset_index(drop=True)
-
-    station_dfs = []
-    for station, group in df_out.groupby(STATION_COL, as_index=False):
-        group = group.sort_values("date_dt").copy()
-        date_diff = group["date_dt"].diff().dt.days
-
-        # Continuous flag: valid if difference from previous measurement is exactly 1 day
-        is_continuous = date_diff == 1
-
-        # Past Target Lags (t-1, t-2, t-3)
-        for lag in lags:
-            col_name = f"{TARGET_COL}_lag{lag}"
-            # Shift past target
-            group[col_name] = group[TARGET_COL].shift(lag)
-            # Mask out lags across discontinuous multi-day gaps
-            for l in range(1, lag + 1):
-                group.loc[group["date_dt"].diff(l).dt.days != l, col_name] = np.nan
-
-        # AOD Lags (t-1, t-2, t-3)
-        for lag in lags:
-            col_name = f"AOD_lag{lag}"
-            group[col_name] = group["AOD"].shift(lag)
-            for l in range(1, lag + 1):
-                group.loc[group["date_dt"].diff(l).dt.days != l, col_name] = np.nan
-
-        # NO2 Lag-1
-        group["NO2_lag1"] = group["NO2"].shift(1)
-        group.loc[~is_continuous, "NO2_lag1"] = np.nan
-
-        # Rolling Statistics on Past Target (past-only: shifted by 1 day)
-        for w in rolling_windows:
-            past_target = group[TARGET_COL].shift(1)
-            group[f"pm25_roll_mean_{w}d"] = past_target.rolling(window=w, min_periods=max(1, w // 2)).mean()
-            group[f"pm25_roll_std_{w}d"] = past_target.rolling(window=w, min_periods=max(1, w // 2)).std()
-
-        # Rolling Extremes: 7-day max AOD (past-only)
-        past_aod = group["AOD"].shift(1)
-        group["aod_roll_max_7d"] = past_aod.rolling(window=7, min_periods=3).max()
-
-        # Day-to-Day Differences (Rates of change)
-        group["temp_diff_1d"] = group["temperature_celsius"].diff(1)
-        group.loc[~is_continuous, "temp_diff_1d"] = np.nan
-
-        group["pressure_diff_1d"] = group["pressure_mb"].diff(1)
-        group.loc[~is_continuous, "pressure_diff_1d"] = np.nan
-
-        # Wind speed magnitude
-        group["wind_speed"] = np.sqrt(group["wind_u"] ** 2 + group["wind_v"] ** 2)
-
-        station_dfs.append(group)
-
-    final_df = pd.concat(station_dfs, axis=0).sort_values(by=["date_dt", STATION_COL]).reset_index(drop=True)
-    final_df = final_df.drop(columns=["date_dt"])
-    return final_df
+def engineer_features(clean):
+    """create all past-only lags, rolling values, and calendar features."""
+    features = clean.copy().sort_values(["sensor_name", "date"]).reset_index(drop=True)
+    feature_groups = {"AOD": [], "NO2_CO_O3": [], "meteorological": [], "calendar": [], "lag_rolling": []}
+    for column, lags in {"AOD": [1, 2, 3], "NO2": [1], "pm25": [1, 2, 3, 7]}.items():
+        if column in features.columns:
+            add_gap_safe_lags(features, column, lags)
+            feature_groups["lag_rolling"].extend([column + "_lag_" + str(lag) for lag in lags])
+    for column in ["AOD", "temperature_celsius", "NO2"]:
+        if column not in features.columns:
+            continue
+        name = column + "_diff_1"
+        features[name] = features.groupby("sensor_name")[column].diff(1)
+        day_difference = features.groupby("sensor_name")["date"].diff(1).dt.days
+        features.loc[day_difference != 1, name] = np.nan
+        feature_groups["lag_rolling"].append(name)
+    for station, group in features.groupby("sensor_name"):
+        index = group.index
+        dates = group["date"]
+        for column in ["AOD", "temperature_celsius", "NO2"]:
+            if column not in features.columns:
+                continue
+            for window in [3, 7]:
+                mean_name = column + "_past_mean_" + str(window)
+                std_name = column + "_past_std_" + str(window)
+                shifted = group[column].shift(1)
+                features.loc[index, mean_name] = shifted.rolling(window).mean().to_numpy()
+                features.loc[index, std_name] = shifted.rolling(window).std().to_numpy()
+                complete_days = dates.diff(window).dt.days == window
+                features.loc[index[~complete_days.fillna(False)], [mean_name, std_name]] = np.nan
+                feature_groups["lag_rolling"].extend([mean_name, std_name])
+        if "AOD" in features.columns:
+            extreme_name = "AOD_past_max_7"
+            features.loc[index, extreme_name] = group["AOD"].shift(1).rolling(7).max().to_numpy()
+            complete_days = dates.diff(7).dt.days == 7
+            features.loc[index[~complete_days.fillna(False)], extreme_name] = np.nan
+    if "AOD" in features.columns:
+        features["AOD_change_3"] = features.groupby("sensor_name")["AOD"].diff(3)
+        day_difference_3 = features.groupby("sensor_name")["date"].diff(3).dt.days
+        features.loc[day_difference_3 != 3, "AOD_change_3"] = np.nan
+        feature_groups["lag_rolling"].append("AOD_change_3")
+    features["day_of_year_sin"] = np.sin(2 * np.pi * features["date"].dt.dayofyear / 365.25)
+    features["day_of_year_cos"] = np.cos(2 * np.pi * features["date"].dt.dayofyear / 365.25)
+    feature_groups["calendar"] = ["day_of_year_sin", "day_of_year_cos"]
+    return features, feature_groups
 
 
-def build_full_feature_pipeline(df: pd.DataFrame) -> pd.DataFrame:
-    """End-to-end feature pipeline execution."""
-    df_feat = add_cyclical_calendar_features(df)
-    df_feat = add_missingness_indicators(df_feat)
-    df_feat = create_station_temporal_features(df_feat)
-    return df_feat
+def add_high_aod_time(features, development_year=2025):
+    """add days since the previous high-aod event using development data."""
+    development_aod = features.loc[features["date"].dt.year < development_year, "AOD"]
+    threshold = development_aod.quantile(0.75)
+    features["previous_high_aod_date"] = np.datetime64("NaT")
+    for station, group in features.groupby("sensor_name"):
+        previous_high = group["date"].where(group["AOD"] >= threshold).shift(1).ffill()
+        features.loc[group.index, "previous_high_aod_date"] = previous_high.to_numpy()
+    features["days_since_high_AOD"] = (features["date"] - features["previous_high_aod_date"]).dt.days
+    features = features.drop(columns=["previous_high_aod_date"])
+    return features, threshold
 
+
+def finish_feature_groups(features, feature_groups):
+    """keep only real columns in the saved feature families."""
+    for key in feature_groups:
+        feature_groups[key] = sorted(set(feature_groups[key]))
+    feature_groups["AOD"] = [column for column in ["AOD"] if column in features.columns]
+    feature_groups["NO2_CO_O3"] = [column for column in ["NO2", "CO", "O3"] if column in features.columns]
+    feature_groups["meteorological"] = [column for column in ["temperature_celsius", "pressure_mb", "wind_u", "wind_v", "wind_speed"] if column in features.columns]
+    feature_list = []
+    for group in feature_groups.values():
+        feature_list.extend(group)
+    return feature_groups, sorted(set(feature_list))

@@ -1,10 +1,458 @@
-model_id,model_group,variable,family,type,unit,n_total,n_missing,pct_missing,n_unique,n_duplicates_key,min,q1,median,q3,max,mean,std,skewness,kurtosis,iqr,n_out_iqr,pct_out_iqr,n_out_z,pct_out_z,n_out_if,pct_out_if,n_out_lof,pct_out_lof,n_sentinel_low,n_sentinel_high,n_removed_total,max_abs_corr,corr_partner,vif,modalities,target_assoc,target_pval,acf_lag1,acf_lag24,pacf_lag1,n_lags_recommended,adf_p,is_leakage_suspect,notes
-eda_baseline,EDA,pm25,Target,numeric,µg/m³,41718,0,0.0,17062,0,0.0067,4.6739,7.8512,12.0867,484.9815,9.4578,9.7297,17.8291,651.6721,7.4128,1613,3.94,255,0.62,1221,2.98,1229,3.0,727,8,735,0.2468,NO2,1.62,1,target (self),0.0,0.512,0.093,0.513,3,0.0,False,Target right-skewed; satellite gases contain periodic non-coverage missingness.
-eda_baseline,EDA,temperature_celsius,Meteorological,numeric,°C,41718,0,0.0,29394,0,-1.2791,12.9657,18.4947,23.7879,34.8658,18.272,6.3862,-0.1023,-0.9712,10.8221,0,0.0,4,0.01,1221,2.98,1229,3.0,0,0,735,0.4031,AOD,2.01,1,"pearson_r=-0.006, spearman=0.064",0.0,0.965,0.709,0.965,3,0.006022,False,Continuous meteorological feature.
-eda_baseline,EDA,pressure_mb,Meteorological,numeric,mb,41718,0,0.0,29394,0,930.3171,987.9864,997.7287,1005.3668,1033.6622,993.8174,17.18,-1.0869,0.7143,17.3805,3179,7.76,72,0.18,1221,2.98,1229,3.0,0,0,735,0.1825,CO,1.46,1,"pearson_r=0.113, spearman=0.167",0.0,0.462,0.147,0.462,3,1e-06,False,Continuous meteorological feature.
-eda_baseline,EDA,wind_u,Meteorological,numeric,m/s,41718,0,0.0,29383,0,-11.0987,-0.9848,0.2058,1.6842,9.6617,0.3434,2.5278,-0.1778,1.0342,2.6691,2133,5.2,281,0.69,1229,3.0,1229,3.0,0,0,735,0.3673,AOD,1.92,1,"pearson_r=-0.079, spearman=-0.164",0.0,0.569,0.058,0.57,3,0.0,False,Continuous meteorological feature.
-eda_baseline,EDA,wind_v,Meteorological,numeric,m/s,41718,0,0.0,29399,0,-10.86,-0.7309,0.0427,0.6615,8.4864,-0.1788,1.3856,-1.2766,4.389,1.3924,2234,5.45,753,1.84,1221,2.98,1229,3.0,0,0,735,0.3915,temperature_celsius,1.98,1,"pearson_r=0.059, spearman=0.097",0.0,0.43,0.094,0.43,3,0.0,False,Continuous meteorological feature.
-eda_baseline,EDA,NO2,NO2,numeric,mol/m²,41718,2407,5.8732,27415,0,0.0,0.0001,0.0001,0.0001,0.0005,0.0001,0.0,2.1227,9.1775,0.0,2061,5.34,731,1.89,1149,2.98,1157,3.0,0,0,735,0.2468,pm25,1.62,1,"pearson_r=0.159, spearman=0.247",0.0,0.388,0.034,0.388,1,0.0,False,Target right-skewed; satellite gases contain periodic non-coverage missingness.
-eda_baseline,EDA,CO,CO,numeric,mol/m²,41718,2407,5.8732,27404,0,0.0131,0.029,0.0314,0.0338,0.0976,0.0316,0.0039,1.3982,13.7684,0.0048,572,1.48,257,0.67,1134,2.94,1157,3.0,0,0,735,0.2784,O3,1.7,1,"pearson_r=0.041, spearman=0.036",0.0,0.727,0.329,0.727,3,0.0,False,Target right-skewed; satellite gases contain periodic non-coverage missingness.
-eda_baseline,EDA,O3,O3,numeric,mol/m²,41718,2448,5.9732,27381,0,0.1039,0.134,0.1405,0.151,0.2293,0.1435,0.0145,1.1505,2.2781,0.017,1219,3.16,463,1.2,1156,3.0,1156,3.0,0,0,735,0.2994,temperature_celsius,1.75,1,"pearson_r=-0.087, spearman=-0.135",0.0,0.809,0.47,0.81,3,0.000214,False,Target right-skewed; satellite gases contain periodic non-coverage missingness.
-eda_baseline,EDA,AOD,AOD,numeric,dimensionless,41718,0,0.0,2128,0,0.0,0.08,0.128,0.194,5.475,0.1487,0.1061,7.6114,246.8519,0.114,1114,2.72,299,0.73,1229,3.0,1163,2.84,0,0,735,0.4031,temperature_celsius,2.01,1,"pearson_r=0.094, spearman=0.180",0.0,0.5,0.147,0.5,3,3e-06,False,Continuous meteorological feature.
+section,variable,metric,value
+audit,date,missing_count,0.0
+audit,date,missing_percentage,0.0
+audit,datetime_utc,missing_count,0.0
+audit,datetime_utc,missing_percentage,0.0
+audit,id,missing_count,0.0
+audit,id,missing_percentage,0.0
+audit,latitude,missing_count,0.0
+audit,latitude,missing_percentage,0.0
+audit,longitude,missing_count,0.0
+audit,longitude,missing_percentage,0.0
+audit,temperature_celsius,missing_count,0.0
+audit,temperature_celsius,missing_percentage,0.0
+audit,pressure_mb,missing_count,0.0
+audit,pressure_mb,missing_percentage,0.0
+audit,wind_u,missing_count,0.0
+audit,wind_u,missing_percentage,0.0
+audit,wind_v,missing_count,0.0
+audit,wind_v,missing_percentage,0.0
+audit,NO2,missing_count,2410.0
+audit,NO2,missing_percentage,5.776882880291481
+audit,CO,missing_count,2410.0
+audit,CO,missing_percentage,5.776882880291481
+audit,O3,missing_count,2451.0
+audit,O3,missing_percentage,5.875161800661585
+audit,AOD,missing_count,0.0
+audit,AOD,missing_percentage,0.0
+audit,pm25,missing_count,0.0
+audit,pm25,missing_percentage,0.0
+audit,sensor_name,missing_count,0.0
+audit,sensor_name,missing_percentage,0.0
+cleaning,pm25,initial rows,41718.0
+cleaning,pm25,missing pm25,0.0
+cleaning,pm25,pm25 <= 0,727.0
+cleaning,pm25,pm25 >= 500,8.0
+cleaning,pm25,exact duplicates after invalid-row removal,0.0
+cleaning,pm25,final cleaned rows,40983.0
+audit,dataset,rows,41718.0
+audit,dataset,columns,15.0
+audit,sensor_name,unique_stations,91.0
+audit,date,unique_dates,2299.0
+numeric_summary,id,min,0.0
+numeric_summary,id,max,109.0
+numeric_summary,id,mean,52.72503233047849
+numeric_summary,id,std,35.034045221259106
+numeric_summary,id,25%,21.0
+numeric_summary,id,50%,50.0
+numeric_summary,id,75%,90.0
+numeric_summary,id,skewness,0.1026773134058781
+numeric_summary,id,kurtosis,-1.5132697959134158
+numeric_summary,latitude,min,36.13331699932336
+numeric_summary,latitude,max,43.5302972250095
+numeric_summary,latitude,mean,39.0303621057693
+numeric_summary,latitude,std,2.2311172251826252
+numeric_summary,latitude,25%,36.841329999668325
+numeric_summary,latitude,50%,39.44832999977105
+numeric_summary,latitude,75%,40.05194443996023
+numeric_summary,latitude,skewness,0.3969953185173644
+numeric_summary,latitude,kurtosis,-0.6862928813080551
+numeric_summary,longitude,min,-5.663499999930786
+numeric_summary,longitude,max,9.136389000276088
+numeric_summary,longitude,mean,-0.46640903835644987
+numeric_summary,longitude,std,3.8290589597413835
+numeric_summary,longitude,25%,-3.6126599999171054
+numeric_summary,longitude,50%,-0.4060499996711381
+numeric_summary,longitude,75%,1.149599999856743
+numeric_summary,longitude,skewness,0.6438396596110731
+numeric_summary,longitude,kurtosis,0.15825056485164504
+numeric_summary,temperature_celsius,min,-1.2790531158447038
+numeric_summary,temperature_celsius,max,34.86583099365237
+numeric_summary,temperature_celsius,mean,18.271961416471907
+numeric_summary,temperature_celsius,std,6.386195485994396
+numeric_summary,temperature_celsius,25%,12.965738868713402
+numeric_summary,temperature_celsius,50%,18.494734064738
+numeric_summary,temperature_celsius,75%,23.78786875406905
+numeric_summary,temperature_celsius,skewness,-0.10233990037675908
+numeric_summary,temperature_celsius,kurtosis,-0.9711924872653483
+numeric_summary,pressure_mb,min,930.3170654296875
+numeric_summary,pressure_mb,max,1033.6621761067709
+numeric_summary,pressure_mb,mean,993.8173852024565
+numeric_summary,pressure_mb,std,17.180014395302564
+numeric_summary,pressure_mb,25%,987.9863655598958
+numeric_summary,pressure_mb,50%,997.7287158203123
+numeric_summary,pressure_mb,75%,1005.3668212890624
+numeric_summary,pressure_mb,skewness,-1.0868883343417437
+numeric_summary,pressure_mb,kurtosis,0.7143439329143311
+numeric_summary,wind_u,min,-11.09872309366862
+numeric_summary,wind_u,max,9.661650975545248
+numeric_summary,wind_u,mean,0.3434441021022417
+numeric_summary,wind_u,std,2.527802431238036
+numeric_summary,wind_u,25%,-0.9848365783691406
+numeric_summary,wind_u,50%,0.2058461507161458
+numeric_summary,wind_u,75%,1.684240500132243
+numeric_summary,wind_u,skewness,-0.17778881106400707
+numeric_summary,wind_u,kurtosis,1.0342010343304988
+numeric_summary,wind_v,min,-10.860048135121664
+numeric_summary,wind_v,max,8.486382762591044
+numeric_summary,wind_v,mean,-0.17877041857430043
+numeric_summary,wind_v,std,1.3855526130933495
+numeric_summary,wind_v,25%,-0.7308829625447592
+numeric_summary,wind_v,50%,0.0427302519480387
+numeric_summary,wind_v,75%,0.6614778240521748
+numeric_summary,wind_v,skewness,-1.2766390459322874
+numeric_summary,wind_v,kurtosis,4.3890133003523975
+numeric_summary,NO2,min,2.268400037853421e-05
+numeric_summary,NO2,max,0.0004831401596448
+numeric_summary,NO2,mean,9.150550144312116e-05
+numeric_summary,NO2,std,2.7497966088204394e-05
+numeric_summary,NO2,25%,7.511809868897817e-05
+numeric_summary,NO2,50%,8.632243515503869e-05
+numeric_summary,NO2,75%,0.000101224299485325
+numeric_summary,NO2,skewness,2.1226828194786074
+numeric_summary,NO2,kurtosis,9.17752228766485
+numeric_summary,CO,min,0.0130575448112163
+numeric_summary,CO,max,0.0976130890603928
+numeric_summary,CO,mean,0.03157817448079976
+numeric_summary,CO,std,0.003893384815637324
+numeric_summary,CO,25%,0.02904093142005845
+numeric_summary,CO,50%,0.031411616713917
+numeric_summary,CO,75%,0.0338265893082233
+numeric_summary,CO,skewness,1.3981855981320517
+numeric_summary,CO,kurtosis,13.768381003252436
+numeric_summary,O3,min,0.1038994989882649
+numeric_summary,O3,max,0.229321851252819
+numeric_summary,O3,mean,0.14354968055418166
+numeric_summary,O3,std,0.014491081431336131
+numeric_summary,O3,25%,0.1340191222973674
+numeric_summary,O3,50%,0.1404717151800516
+numeric_summary,O3,75%,0.15104814302913835
+numeric_summary,O3,skewness,1.150540023650542
+numeric_summary,O3,kurtosis,2.278098391729982
+numeric_summary,AOD,min,0.0
+numeric_summary,AOD,max,5.4750000000000005
+numeric_summary,AOD,mean,0.14869271608553142
+numeric_summary,AOD,std,0.10613694882387549
+numeric_summary,AOD,25%,0.08
+numeric_summary,AOD,50%,0.128
+numeric_summary,AOD,75%,0.194
+numeric_summary,AOD,skewness,7.611377489946439
+numeric_summary,AOD,kurtosis,246.85192811692283
+numeric_summary,pm25,min,0.0066666666666666
+numeric_summary,pm25,max,484.9815
+numeric_summary,pm25,mean,9.457765050524934
+numeric_summary,pm25,std,9.729712706522612
+numeric_summary,pm25,25%,4.673863636363636
+numeric_summary,pm25,50%,7.851176470588236
+numeric_summary,pm25,75%,12.086666666666666
+numeric_summary,pm25,skewness,17.829102319430085
+numeric_summary,pm25,kurtosis,651.6721071025986
+missing_by_month,NO2,month_1,127.0
+missing_by_month,NO2,month_2,95.0
+missing_by_month,NO2,month_3,173.0
+missing_by_month,NO2,month_4,206.0
+missing_by_month,NO2,month_5,228.0
+missing_by_month,NO2,month_6,427.0
+missing_by_month,NO2,month_7,284.0
+missing_by_month,NO2,month_8,9.0
+missing_by_month,NO2,month_9,117.0
+missing_by_month,NO2,month_10,333.0
+missing_by_month,NO2,month_11,231.0
+missing_by_month,NO2,month_12,177.0
+missing_by_station,NO2,AIX CENTRE ECOLE ART,0.0
+missing_by_station,NO2,AIX ROY RENE,0.0
+missing_by_station,NO2,ALBALAT DELS TARONGERS,159.0
+missing_by_station,NO2,ALCANTARILLA,0.0
+missing_by_station,NO2,ALCORA,155.0
+missing_by_station,NO2,ALGAR DE PALÀNCIA,160.0
+missing_by_station,NO2,ALMASSORA-C. P. OCHANDO,156.0
+missing_by_station,NO2,ALUMBRES,0.0
+missing_by_station,NO2,Albors - Valencia,0.0
+missing_by_station,NO2,Armilla Center,0.0
+missing_by_station,NO2,"Avinguda Meridiana, Sagerra",0.0
+missing_by_station,NO2,BARCELONA (PARC DE LA VALL D'HEBRON),0.0
+missing_by_station,NO2,BENICASSIM,159.0
+missing_by_station,NO2,BURRIANA,150.0
+missing_by_station,NO2,Barcelona,0.0
+missing_by_station,NO2,Barcelona - Camp d'en Grassot,0.0
+missing_by_station,NO2,Barcelona - Porta - Can Dragó,0.0
+missing_by_station,NO2,"C. Restoy, 51, Almeria, Spain",0.0
+missing_by_station,NO2,CAMPAMENTO,0.0
+missing_by_station,NO2,CAMPANILLAS CIFA,0.0
+missing_by_station,NO2,CARRANQUE,0.0
+missing_by_station,NO2,CASTELLÓ-PENYETA,0.0
+missing_by_station,NO2,CENCA1,0.0
+missing_by_station,NO2,CENMO1,0.0
+missing_by_station,NO2,COLEGIO (S1),0.0
+missing_by_station,NO2,CORTIJILLOS,0.0
+missing_by_station,NO2,E2: ALCORNOCALES,0.0
+missing_by_station,NO2,E4:RINCONCILLO,0.0
+missing_by_station,NO2,E7:EL ZABAL,0.0
+missing_by_station,NO2,ECONOMATO,0.0
+missing_by_station,NO2,ELDA-LACY,150.0
+missing_by_station,NO2,FR02013,0.0
+missing_by_station,NO2,FR02020,0.0
+missing_by_station,NO2,FR03006,123.0
+missing_by_station,NO2,FR03014,0.0
+missing_by_station,NO2,FR03029,116.0
+missing_by_station,NO2,FR03030,157.0
+missing_by_station,NO2,FR03043,125.0
+missing_by_station,NO2,Fos Les Carabins,0.0
+missing_by_station,NO2,GRANADA - NORTE,0.0
+missing_by_station,NO2,GUADARRANQUE,0.0
+missing_by_station,NO2,Gibraltar,0.0
+missing_by_station,NO2,Granollers,0.0
+missing_by_station,NO2,HOSTELERÍA,0.0
+missing_by_station,NO2,LA ALJORRA,0.0
+missing_by_station,NO2,LA LÍNEA,0.0
+missing_by_station,NO2,LOS BARRIOS,0.0
+missing_by_station,NO2,La Sagrera,0.0
+missing_by_station,NO2,MADREVIEJA,0.0
+missing_by_station,NO2,MEDITERRÁNEO,0.0
+missing_by_station,NO2,MOLINA DE SEGURA,0.0
+missing_by_station,NO2,MOMPEAN,0.0
+missing_by_station,NO2,Martorell,0.0
+missing_by_station,NO2,Mollet del Vallès,0.0
+missing_by_station,NO2,ONTINYENT,75.0
+missing_by_station,NO2,PALACIO CONGRESOS,0.0
+missing_by_station,NO2,PUENTE MAYORGA,0.0
+missing_by_station,NO2,Passeig de Fabra i Puig,0.0
+missing_by_station,NO2,Perafort,0.0
+missing_by_station,NO2,Polinya,0.0
+missing_by_station,NO2,QUART DE POBLET,154.0
+missing_by_station,NO2,RONDA SUR,0.0
+missing_by_station,NO2,Reus,0.0
+missing_by_station,NO2,Rognac les Brets,0.0
+missing_by_station,NO2,Rosia Road,0.0
+missing_by_station,NO2,SAGUNT CEA,158.0
+missing_by_station,NO2,SAGUNT PORT,0.0
+missing_by_station,NO2,SAN BASILIO,0.0
+missing_by_station,NO2,SAN ROQUE (S6),0.0
+missing_by_station,NO2,Sant Adrià de Besòs,0.0
+missing_by_station,NO2,Sant Andreu de la Barca,0.0
+missing_by_station,NO2,Sant Francesc,0.0
+missing_by_station,NO2,Santa Perpètua de Mogoda,0.0
+missing_by_station,NO2,TORRENT-EL VEDAT,0.0
+missing_by_station,NO2,TORREVIEJA,0.0
+missing_by_station,NO2,Tarragona,0.0
+missing_by_station,NO2,Terrassa,0.0
+missing_by_station,NO2,VALLE,0.0
+missing_by_station,NO2,VALLE DE ESCOMBRERAS,0.0
+missing_by_station,NO2,VALÈNCIA - AVD. FRANCIA,4.0
+missing_by_station,NO2,VALÈNCIA - MOLÍ DEL SOL,98.0
+missing_by_station,NO2,VALÈNCIA OLIVERETA,0.0
+missing_by_station,NO2,VALÈNCIA-CENTRE,0.0
+missing_by_station,NO2,VALÈNCIA-PISTA DE SILLA,154.0
+missing_by_station,NO2,VALÈNCIA-POLITÈCNIC,152.0
+missing_by_station,NO2,VILA-SECA (IES VILA-SECA),0.0
+missing_by_station,NO2,VILAMARXANT,2.0
+missing_by_station,NO2,VILLENA PARQUE FERIA,0.0
+missing_by_station,NO2,Vila-seca,0.0
+missing_by_station,NO2,Viladecavalls ,0.0
+missing_by_station,NO2,outdoors,0.0
+missing_by_month,CO,month_1,127.0
+missing_by_month,CO,month_2,95.0
+missing_by_month,CO,month_3,173.0
+missing_by_month,CO,month_4,206.0
+missing_by_month,CO,month_5,228.0
+missing_by_month,CO,month_6,427.0
+missing_by_month,CO,month_7,284.0
+missing_by_month,CO,month_8,9.0
+missing_by_month,CO,month_9,117.0
+missing_by_month,CO,month_10,333.0
+missing_by_month,CO,month_11,231.0
+missing_by_month,CO,month_12,177.0
+missing_by_station,CO,AIX CENTRE ECOLE ART,0.0
+missing_by_station,CO,AIX ROY RENE,0.0
+missing_by_station,CO,ALBALAT DELS TARONGERS,159.0
+missing_by_station,CO,ALCANTARILLA,0.0
+missing_by_station,CO,ALCORA,155.0
+missing_by_station,CO,ALGAR DE PALÀNCIA,160.0
+missing_by_station,CO,ALMASSORA-C. P. OCHANDO,156.0
+missing_by_station,CO,ALUMBRES,0.0
+missing_by_station,CO,Albors - Valencia,0.0
+missing_by_station,CO,Armilla Center,0.0
+missing_by_station,CO,"Avinguda Meridiana, Sagerra",0.0
+missing_by_station,CO,BARCELONA (PARC DE LA VALL D'HEBRON),0.0
+missing_by_station,CO,BENICASSIM,159.0
+missing_by_station,CO,BURRIANA,150.0
+missing_by_station,CO,Barcelona,0.0
+missing_by_station,CO,Barcelona - Camp d'en Grassot,0.0
+missing_by_station,CO,Barcelona - Porta - Can Dragó,0.0
+missing_by_station,CO,"C. Restoy, 51, Almeria, Spain",0.0
+missing_by_station,CO,CAMPAMENTO,0.0
+missing_by_station,CO,CAMPANILLAS CIFA,0.0
+missing_by_station,CO,CARRANQUE,0.0
+missing_by_station,CO,CASTELLÓ-PENYETA,0.0
+missing_by_station,CO,CENCA1,0.0
+missing_by_station,CO,CENMO1,0.0
+missing_by_station,CO,COLEGIO (S1),0.0
+missing_by_station,CO,CORTIJILLOS,0.0
+missing_by_station,CO,E2: ALCORNOCALES,0.0
+missing_by_station,CO,E4:RINCONCILLO,0.0
+missing_by_station,CO,E7:EL ZABAL,0.0
+missing_by_station,CO,ECONOMATO,0.0
+missing_by_station,CO,ELDA-LACY,150.0
+missing_by_station,CO,FR02013,0.0
+missing_by_station,CO,FR02020,0.0
+missing_by_station,CO,FR03006,123.0
+missing_by_station,CO,FR03014,0.0
+missing_by_station,CO,FR03029,116.0
+missing_by_station,CO,FR03030,157.0
+missing_by_station,CO,FR03043,125.0
+missing_by_station,CO,Fos Les Carabins,0.0
+missing_by_station,CO,GRANADA - NORTE,0.0
+missing_by_station,CO,GUADARRANQUE,0.0
+missing_by_station,CO,Gibraltar,0.0
+missing_by_station,CO,Granollers,0.0
+missing_by_station,CO,HOSTELERÍA,0.0
+missing_by_station,CO,LA ALJORRA,0.0
+missing_by_station,CO,LA LÍNEA,0.0
+missing_by_station,CO,LOS BARRIOS,0.0
+missing_by_station,CO,La Sagrera,0.0
+missing_by_station,CO,MADREVIEJA,0.0
+missing_by_station,CO,MEDITERRÁNEO,0.0
+missing_by_station,CO,MOLINA DE SEGURA,0.0
+missing_by_station,CO,MOMPEAN,0.0
+missing_by_station,CO,Martorell,0.0
+missing_by_station,CO,Mollet del Vallès,0.0
+missing_by_station,CO,ONTINYENT,75.0
+missing_by_station,CO,PALACIO CONGRESOS,0.0
+missing_by_station,CO,PUENTE MAYORGA,0.0
+missing_by_station,CO,Passeig de Fabra i Puig,0.0
+missing_by_station,CO,Perafort,0.0
+missing_by_station,CO,Polinya,0.0
+missing_by_station,CO,QUART DE POBLET,154.0
+missing_by_station,CO,RONDA SUR,0.0
+missing_by_station,CO,Reus,0.0
+missing_by_station,CO,Rognac les Brets,0.0
+missing_by_station,CO,Rosia Road,0.0
+missing_by_station,CO,SAGUNT CEA,158.0
+missing_by_station,CO,SAGUNT PORT,0.0
+missing_by_station,CO,SAN BASILIO,0.0
+missing_by_station,CO,SAN ROQUE (S6),0.0
+missing_by_station,CO,Sant Adrià de Besòs,0.0
+missing_by_station,CO,Sant Andreu de la Barca,0.0
+missing_by_station,CO,Sant Francesc,0.0
+missing_by_station,CO,Santa Perpètua de Mogoda,0.0
+missing_by_station,CO,TORRENT-EL VEDAT,0.0
+missing_by_station,CO,TORREVIEJA,0.0
+missing_by_station,CO,Tarragona,0.0
+missing_by_station,CO,Terrassa,0.0
+missing_by_station,CO,VALLE,0.0
+missing_by_station,CO,VALLE DE ESCOMBRERAS,0.0
+missing_by_station,CO,VALÈNCIA - AVD. FRANCIA,4.0
+missing_by_station,CO,VALÈNCIA - MOLÍ DEL SOL,98.0
+missing_by_station,CO,VALÈNCIA OLIVERETA,0.0
+missing_by_station,CO,VALÈNCIA-CENTRE,0.0
+missing_by_station,CO,VALÈNCIA-PISTA DE SILLA,154.0
+missing_by_station,CO,VALÈNCIA-POLITÈCNIC,152.0
+missing_by_station,CO,VILA-SECA (IES VILA-SECA),0.0
+missing_by_station,CO,VILAMARXANT,2.0
+missing_by_station,CO,VILLENA PARQUE FERIA,0.0
+missing_by_station,CO,Vila-seca,0.0
+missing_by_station,CO,Viladecavalls ,0.0
+missing_by_station,CO,outdoors,0.0
+missing_by_month,O3,month_1,127.0
+missing_by_month,O3,month_2,95.0
+missing_by_month,O3,month_3,173.0
+missing_by_month,O3,month_4,206.0
+missing_by_month,O3,month_5,228.0
+missing_by_month,O3,month_6,427.0
+missing_by_month,O3,month_7,284.0
+missing_by_month,O3,month_8,9.0
+missing_by_month,O3,month_9,158.0
+missing_by_month,O3,month_10,333.0
+missing_by_month,O3,month_11,231.0
+missing_by_month,O3,month_12,177.0
+missing_by_station,O3,AIX CENTRE ECOLE ART,0.0
+missing_by_station,O3,AIX ROY RENE,0.0
+missing_by_station,O3,ALBALAT DELS TARONGERS,160.0
+missing_by_station,O3,ALCANTARILLA,0.0
+missing_by_station,O3,ALCORA,158.0
+missing_by_station,O3,ALGAR DE PALÀNCIA,162.0
+missing_by_station,O3,ALMASSORA-C. P. OCHANDO,158.0
+missing_by_station,O3,ALUMBRES,0.0
+missing_by_station,O3,Albors - Valencia,0.0
+missing_by_station,O3,Armilla Center,0.0
+missing_by_station,O3,"Avinguda Meridiana, Sagerra",0.0
+missing_by_station,O3,BARCELONA (PARC DE LA VALL D'HEBRON),0.0
+missing_by_station,O3,BENICASSIM,162.0
+missing_by_station,O3,BURRIANA,153.0
+missing_by_station,O3,Barcelona,0.0
+missing_by_station,O3,Barcelona - Camp d'en Grassot,0.0
+missing_by_station,O3,Barcelona - Porta - Can Dragó,0.0
+missing_by_station,O3,"C. Restoy, 51, Almeria, Spain",0.0
+missing_by_station,O3,CAMPAMENTO,0.0
+missing_by_station,O3,CAMPANILLAS CIFA,0.0
+missing_by_station,O3,CARRANQUE,0.0
+missing_by_station,O3,CASTELLÓ-PENYETA,0.0
+missing_by_station,O3,CENCA1,0.0
+missing_by_station,O3,CENMO1,0.0
+missing_by_station,O3,COLEGIO (S1),0.0
+missing_by_station,O3,CORTIJILLOS,0.0
+missing_by_station,O3,E2: ALCORNOCALES,0.0
+missing_by_station,O3,E4:RINCONCILLO,0.0
+missing_by_station,O3,E7:EL ZABAL,0.0
+missing_by_station,O3,ECONOMATO,0.0
+missing_by_station,O3,ELDA-LACY,153.0
+missing_by_station,O3,FR02013,0.0
+missing_by_station,O3,FR02020,0.0
+missing_by_station,O3,FR03006,124.0
+missing_by_station,O3,FR03014,0.0
+missing_by_station,O3,FR03029,118.0
+missing_by_station,O3,FR03030,159.0
+missing_by_station,O3,FR03043,127.0
+missing_by_station,O3,Fos Les Carabins,0.0
+missing_by_station,O3,GRANADA - NORTE,0.0
+missing_by_station,O3,GUADARRANQUE,0.0
+missing_by_station,O3,Gibraltar,0.0
+missing_by_station,O3,Granollers,0.0
+missing_by_station,O3,HOSTELERÍA,0.0
+missing_by_station,O3,LA ALJORRA,0.0
+missing_by_station,O3,LA LÍNEA,0.0
+missing_by_station,O3,LOS BARRIOS,0.0
+missing_by_station,O3,La Sagrera,0.0
+missing_by_station,O3,MADREVIEJA,0.0
+missing_by_station,O3,MEDITERRÁNEO,0.0
+missing_by_station,O3,MOLINA DE SEGURA,0.0
+missing_by_station,O3,MOMPEAN,0.0
+missing_by_station,O3,Martorell,0.0
+missing_by_station,O3,Mollet del Vallès,0.0
+missing_by_station,O3,ONTINYENT,77.0
+missing_by_station,O3,PALACIO CONGRESOS,0.0
+missing_by_station,O3,PUENTE MAYORGA,0.0
+missing_by_station,O3,Passeig de Fabra i Puig,0.0
+missing_by_station,O3,Perafort,0.0
+missing_by_station,O3,Polinya,0.0
+missing_by_station,O3,QUART DE POBLET,157.0
+missing_by_station,O3,RONDA SUR,0.0
+missing_by_station,O3,Reus,0.0
+missing_by_station,O3,Rognac les Brets,0.0
+missing_by_station,O3,Rosia Road,0.0
+missing_by_station,O3,SAGUNT CEA,161.0
+missing_by_station,O3,SAGUNT PORT,0.0
+missing_by_station,O3,SAN BASILIO,0.0
+missing_by_station,O3,SAN ROQUE (S6),0.0
+missing_by_station,O3,Sant Adrià de Besòs,0.0
+missing_by_station,O3,Sant Andreu de la Barca,0.0
+missing_by_station,O3,Sant Francesc,0.0
+missing_by_station,O3,Santa Perpètua de Mogoda,0.0
+missing_by_station,O3,TORRENT-EL VEDAT,0.0
+missing_by_station,O3,TORREVIEJA,0.0
+missing_by_station,O3,Tarragona,0.0
+missing_by_station,O3,Terrassa,0.0
+missing_by_station,O3,VALLE,0.0
+missing_by_station,O3,VALLE DE ESCOMBRERAS,0.0
+missing_by_station,O3,VALÈNCIA - AVD. FRANCIA,7.0
+missing_by_station,O3,VALÈNCIA - MOLÍ DEL SOL,98.0
+missing_by_station,O3,VALÈNCIA OLIVERETA,0.0
+missing_by_station,O3,VALÈNCIA-CENTRE,0.0
+missing_by_station,O3,VALÈNCIA-PISTA DE SILLA,157.0
+missing_by_station,O3,VALÈNCIA-POLITÈCNIC,155.0
+missing_by_station,O3,VILA-SECA (IES VILA-SECA),0.0
+missing_by_station,O3,VILAMARXANT,2.0
+missing_by_station,O3,VILLENA PARQUE FERIA,0.0
+missing_by_station,O3,Vila-seca,0.0
+missing_by_station,O3,Viladecavalls ,0.0
+missing_by_station,O3,outdoors,0.0

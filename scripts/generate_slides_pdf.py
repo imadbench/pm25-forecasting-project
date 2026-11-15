@@ -310,9 +310,9 @@ def build_slides_pdf():
     # =========================================================================
     story.append(Paragraph("5. Atmospheric & Remote Sensing Correlation Structure", slide_title_style))
 
-    fig_corr_path = FIGURES_DIR / "correlation_matrix.png"
+    fig_corr_path = FIGURES_DIR / "correlation_heatmaps.png"
     if fig_corr_path.exists():
-        story.append(Image(str(fig_corr_path), width=5.2 * inch, height=3.6 * inch))
+        story.append(Image(str(fig_corr_path), width=7.2 * inch, height=2.6 * inch))
 
     story.append(Spacer(1, 5))
     story.append(Paragraph("&bull; <b>AOD & NO2 Synergy:</b> Positive rank correlation with PM2.5 (Spearman r = +0.25 for NO2, +0.18 for AOD).", bullet_style))
@@ -324,9 +324,9 @@ def build_slides_pdf():
     # =========================================================================
     story.append(Paragraph("6. Time-Series Diagnostics: Autocorrelation & Stationarity (§5.2)", slide_title_style))
 
-    fig_ts_path = FIGURES_DIR / "temporal_trend_acf_pacf.png"
+    fig_ts_path = FIGURES_DIR / "acf_pacf_daily_mean_pm25.png"
     if fig_ts_path.exists():
-        story.append(Image(str(fig_ts_path), width=7.2 * inch, height=3.2 * inch))
+        story.append(Image(str(fig_ts_path), width=7.2 * inch, height=2.4 * inch))
 
     story.append(Spacer(1, 5))
     story.append(Paragraph("&bull; <b>Stationarity Confirmed:</b> Augmented Dickey-Fuller (ADF) test p-value = <b>9.87e-10</b> (ADF stat = -6.95), decisively rejecting unit-root non-stationarity.", bullet_style))
@@ -506,9 +506,9 @@ def build_slides_pdf():
     # =========================================================================
     # SLIDE 11: CONTROLLED FEATURE ABLATION
     # =========================================================================
-    story.append(Paragraph("10. Controlled Feature Ablation Insights (§8.2)", slide_title_style))
+    story.append(Paragraph("10. Controlled Feature Ablation & Predictor Horizons", slide_title_style))
 
-    fig_abl_path = FIGURES_DIR / "ablation_barplot.png"
+    fig_abl_path = FIGURES_DIR / "lead_lag_correlations.png"
     if fig_abl_path.exists():
         story.append(Image(str(fig_abl_path), width=7.2 * inch, height=3.0 * inch))
 

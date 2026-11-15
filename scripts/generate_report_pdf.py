@@ -533,7 +533,7 @@ def build_technical_report():
     # Insert Table from Exploratory_Data.csv
     eda_csv_path = RESULTS_DIR / "Exploratory_Data.csv"
     if eda_csv_path.exists():
-        df_eda_table = pd.read_csv(eda_csv_path)
+        df_raw_eda = pd.read_csv(eda_csv_path)
         table_rows = [
             [
                 Paragraph("<b>Variable</b>", table_header),
@@ -546,17 +546,62 @@ def build_technical_report():
                 Paragraph("<b>Skew / Kurt</b>", table_header),
             ]
         ]
-        for _, r in df_eda_table.iterrows():
-            table_rows.append([
-                Paragraph(f"<code>{r['variable']}</code>", table_cell),
-                Paragraph(str(r["unit"]), table_cell_center),
-                Paragraph(f"{int(r['n_total'] - r['n_missing']):,}", table_cell_center),
-                Paragraph(f"{r['pct_missing']:.1f}%", table_cell_center),
-                Paragraph(f"{r['mean']:.2f} &plusmn; {r['std']:.2f}", table_cell_center),
-                Paragraph(f"{r['median']:.2f} [{r['iqr']:.2f}]", table_cell_center),
-                Paragraph(f"{r['min']:.2f} &ndash; {r['max']:.2f}", table_cell_center),
-                Paragraph(f"{r['skewness']:.1f} / {r['kurtosis']:.1f}", table_cell_center),
-            ])
+        if "unit" in df_raw_eda.columns:
+            for _, r in df_raw_eda.iterrows():
+                table_rows.append([
+                    Paragraph(f"<code>{r['variable']}</code>", table_cell),
+                    Paragraph(str(r["unit"]), table_cell_center),
+                    Paragraph(f"{int(r['n_total'] - r['n_missing']):,}", table_cell_center),
+                    Paragraph(f"{r['pct_missing']:.1f}%", table_cell_center),
+                    Paragraph(f"{r['mean']:.2f} &plusmn; {r['std']:.2f}", table_cell_center),
+                    Paragraph(f"{r['median']:.2f} [{r['iqr']:.2f}]", table_cell_center),
+                    Paragraph(f"{r['min']:.2f} &ndash; {r['max']:.2f}", table_cell_center),
+                    Paragraph(f"{r['skewness']:.1f} / {r['kurtosis']:.1f}", table_cell_center),
+                ])
+        else:
+            # Tidy format from ref_repo: section, variable, metric, value
+            num_vars = ["pm25", "AOD", "NO2", "CO", "O3", "temperature_celsius", "pressure_mb", "wind_u", "wind_v"]
+            unit_map = {
+                "pm25": "&mu;g/m&sup3;",
+                "AOD": "dimless",
+                "NO2": "mol/m&sup2;",
+                "CO": "mol/m&sup2;",
+                "O3": "mol/m&sup2;",
+                "temperature_celsius": "&deg;C",
+                "pressure_mb": "hPa",
+                "wind_u": "m/s",
+                "wind_v": "m/s",
+            }
+            num_summary = df_raw_eda[df_raw_eda["section"] == "numeric_summary"]
+            audit_summary = df_raw_eda[df_raw_eda["section"] == "audit"]
+            for v in num_vars:
+                v_metrics = dict(zip(num_summary[num_summary["variable"] == v]["metric"], num_summary[num_summary["variable"] == v]["value"]))
+                v_audit = dict(zip(audit_summary[audit_summary["variable"] == v]["metric"], audit_summary[audit_summary["variable"] == v]["value"]))
+                if not v_metrics:
+                    continue
+                missing_pct = v_audit.get("missing_percentage", 0.0)
+                missing_cnt = v_audit.get("missing_count", 0.0)
+                valid_obs = int(41718 - missing_cnt)
+                mean_val = v_metrics.get("mean", 0.0)
+                std_val = v_metrics.get("std", 0.0)
+                med_val = v_metrics.get("50%", 0.0)
+                q25 = v_metrics.get("25%", 0.0)
+                q75 = v_metrics.get("75%", 0.0)
+                iqr_val = q75 - q25
+                min_val = v_metrics.get("min", 0.0)
+                max_val = v_metrics.get("max", 0.0)
+                skew_val = v_metrics.get("skewness", 0.0)
+                kurt_val = v_metrics.get("kurtosis", 0.0)
+                table_rows.append([
+                    Paragraph(f"<code>{v}</code>", table_cell),
+                    Paragraph(unit_map.get(v, "-"), table_cell_center),
+                    Paragraph(f"{valid_obs:,}", table_cell_center),
+                    Paragraph(f"{missing_pct:.1f}%", table_cell_center),
+                    Paragraph(f"{mean_val:.2f} &plusmn; {std_val:.2f}", table_cell_center),
+                    Paragraph(f"{med_val:.2f} [{iqr_val:.2f}]", table_cell_center),
+                    Paragraph(f"{min_val:.2f} &ndash; {max_val:.2f}", table_cell_center),
+                    Paragraph(f"{skew_val:.1f} / {kurt_val:.1f}", table_cell_center),
+                ])
 
         t_eda = Table(table_rows, colWidths=[95, 45, 55, 45, 85, 75, 70, 50])
         t_eda.setStyle(
@@ -579,8 +624,8 @@ def build_technical_report():
         )
     )
 
-    # Insert Figure: eda_histogrammes.png
-    fig_hist = FIGURES_DIR / "eda_histogrammes.png"
+    # Insert Figure: main_variables_histograms_boxplots.png
+    fig_hist = FIGURES_DIR / "main_variables_histograms_boxplots.png"
     if fig_hist.exists():
         story.append(Spacer(1, 5))
         story.append(Image(str(fig_hist), width=6.8 * inch, height=3.6 * inch))
@@ -616,26 +661,26 @@ def build_technical_report():
         )
     )
 
-    # Insert Figure: temporal_trend_acf_pacf.png
-    fig_ts = FIGURES_DIR / "temporal_trend_acf_pacf.png"
+    # Insert Figure: acf_pacf_daily_mean_pm25.png
+    fig_ts = FIGURES_DIR / "acf_pacf_daily_mean_pm25.png"
     if fig_ts.exists():
         story.append(Spacer(1, 5))
-        story.append(Image(str(fig_ts), width=6.8 * inch, height=3.4 * inch))
+        story.append(Image(str(fig_ts), width=6.8 * inch, height=2.3 * inch))
         story.append(
             Paragraph(
-                "<b>Figure 2:</b> Multi-year daily PM2.5 trajectory (2016-2026) alongside Autocorrelation (ACF) and Partial Autocorrelation (PACF) correlograms demonstrating strong 1-day temporal persistence.",
+                "<b>Figure 2:</b> Autocorrelation (ACF) and Partial Autocorrelation (PACF) correlograms demonstrating strong 1-day temporal persistence.",
                 callout_style,
             )
         )
 
-    # Insert Figure: seasonal_pm25_boxplot.png
-    fig_box = FIGURES_DIR / "seasonal_pm25_boxplot.png"
+    # Insert Figure: pm25_monthly_yearly_drift.png
+    fig_box = FIGURES_DIR / "pm25_monthly_yearly_drift.png"
     if fig_box.exists():
         story.append(Spacer(1, 5))
-        story.append(Image(str(fig_box), width=6.8 * inch, height=2.6 * inch))
+        story.append(Image(str(fig_box), width=6.8 * inch, height=4.2 * inch))
         story.append(
             Paragraph(
-                "<b>Figure 3:</b> Monthly seasonal dynamics of daily PM2.5 across the Mediterranean Basin. Outlier fliers are suppressed for visual clarity.",
+                "<b>Figure 3:</b> Monthly and Yearly Median PM2.5 concentrations across Mediterranean Basin stations demonstrating seasonal and interannual drift.",
                 callout_style,
             )
         )
@@ -700,14 +745,14 @@ def build_technical_report():
         )
     )
 
-    # Insert Figure: spatial_stations_map.png
-    fig_map = FIGURES_DIR / "spatial_stations_map.png"
+    # Insert Figure: temporal_folds.png
+    fig_map = FIGURES_DIR / "temporal_folds.png"
     if fig_map.exists():
         story.append(Spacer(1, 5))
-        story.append(Image(str(fig_map), width=6.8 * inch, height=3.5 * inch))
+        story.append(Image(str(fig_map), width=6.8 * inch, height=2.3 * inch))
         story.append(
             Paragraph(
-                "<b>Figure 4:</b> Geographic distribution of the 94 Mediterranean ground monitoring stations. Marker color reflects multi-year mean PM2.5 concentration; marker size indicates observation density.",
+                "<b>Figure 4:</b> Temporal cross-validation fold partition (5 splits with 1-day embargo gap) demonstrating progressive expanding-window training and future validation blocks.",
                 callout_style,
             )
         )
@@ -813,14 +858,14 @@ def build_technical_report():
         )
     )
 
-    # Insert Figure: correlation_matrix.png
-    fig_corr = FIGURES_DIR / "correlation_matrix.png"
+    # Insert Figure: correlation_heatmaps.png
+    fig_corr = FIGURES_DIR / "correlation_heatmaps.png"
     if fig_corr.exists():
         story.append(Spacer(1, 5))
-        story.append(Image(str(fig_corr), width=6.8 * inch, height=3.5 * inch))
+        story.append(Image(str(fig_corr), width=6.8 * inch, height=2.6 * inch))
         story.append(
             Paragraph(
-                "<b>Figure 5:</b> Spearman rank correlation heatmap among environmental predictors and surface PM2.5. Note the moderate positive associations with AOD and NO2 and inverse relationship with wind velocity.",
+                "<b>Figure 5:</b> Pearson and Spearman rank correlation heatmaps among environmental predictors and surface PM2.5.",
                 callout_style,
             )
         )
@@ -925,14 +970,14 @@ def build_technical_report():
     )
     story.append(t_abl)
 
-    # Insert Figure: ablation_barplot.png
-    fig_abl = FIGURES_DIR / "ablation_barplot.png"
+    # Insert Figure: lead_lag_correlations.png
+    fig_abl = FIGURES_DIR / "lead_lag_correlations.png"
     if fig_abl.exists():
         story.append(Spacer(1, 5))
-        story.append(Image(str(fig_abl), width=6.5 * inch, height=2.8 * inch))
+        story.append(Image(str(fig_abl), width=6.8 * inch, height=3.0 * inch))
         story.append(
             Paragraph(
-                "<b>Figure 6:</b> Controlled feature ablation &Delta;RMSE impact on XGBoost forecasting error. Positive bars indicate that removing the feature family worsens predictive performance.",
+                "<b>Figure 6:</b> Lead-lag correlations between surface PM2.5 and historical predictor variables across 0 to 7 day lags.",
                 callout_style,
             )
         )
