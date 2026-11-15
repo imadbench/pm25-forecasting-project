@@ -1,0 +1,2 @@
+model_group,model_a,model_b,comparison_axis,spearman_rho,jaccard_top5,rho_threshold_met,jaccard_threshold_met,notes
+G8,xgb_pm25,lgbm_pm25,across_folds,0.88,0.8,True,True,Feature hierarchy highly stable across temporal CV folds

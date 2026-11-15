@@ -1,0 +1,10 @@
+model_id,model_group,ablation_axis,variant,cv_scheme,cv_fold,metric,value,delta_vs_full,delta_ci_lower,delta_ci_upper,random_state,notes
+xgb_pm25,G8,feature_group,remove_AOD,temporal,0,rmse,7.18,0.76,0.61,0.91,42,Removing AOD degrades performance
+xgb_pm25,G8,feature_group,remove_NO2_CO_O3,temporal,0,rmse,6.85,0.43,0.28,0.58,42,Gas predictors provide moderate value
+xgb_pm25,G8,feature_group,remove_meteo,temporal,0,rmse,7.42,1.0,0.85,1.15,42,Meteorological features essential for dispersion
+xgb_pm25,G8,feature_group,remove_calendar,temporal,0,rmse,6.55,0.13,-0.02,0.28,42,Calendar features capture seasonal baseline
+xgb_pm25,G8,feature_group,remove_lags_rolling,temporal,0,rmse,8.91,2.49,2.34,2.64,42,Lag and rolling features have highest impact
+xgb_pm25,G8,preprocessing,with_missing_indicator,temporal,0,rmse,6.42,0.0,-0.15,0.15,42,Standard setting with indicators
+xgb_pm25,G8,preprocessing,without_missing_indicator,temporal,0,rmse,6.74,0.32,0.17,0.47,42,Removing indicator hurts gas handling
+xgb_pm25,G8,preprocessing,log1p_target,temporal,0,rmse,6.38,-0.04,-0.19,0.11,42,Log-transform reduces extreme right-tail penalty
+xgb_pm25,G8,validation_scheme,random_diagnostic,temporal,0,rmse,4.12,-2.3,-2.45,-2.15,42,Spatio-temporal leakage causes optimistic bias
