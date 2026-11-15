@@ -26,7 +26,6 @@ Part 1 is done: exploration and preprocessing. Model training, statistical compa
 │   ├── 01_eda.ipynb
 │   └── 02_timeseries.ipynb
 ├── presentation/
-│   ├── Part1_EDA_Presentation.pptx
 │   └── slides.pdf
 ├── reports/
 │   └── technical_report.pdf
@@ -34,9 +33,7 @@ Part 1 is done: exploration and preprocessing. Model training, statistical compa
 │   ├── Exploratory_Data.csv
 │   └── Exploratory_temporal.csv
 ├── scripts/
-│   ├── run_eda.py
-│   ├── generate_report_pdf.py
-│   └── generate_slides_pdf.py
+│   └── run_eda.py
 ├── src/
 │   ├── config.py
 │   ├── features.py
@@ -76,8 +73,8 @@ Then open and run `notebooks/01_eda.ipynb` followed by `notebooks/02_timeseries.
 - `data/processed/feature_groups.json`: feature families for later work.
 - `folds/`: temporal, spatial, and shuffled development folds.
 - `figures/`: Part 1 diagnostic figures and presentation figures under `figures/slides/`.
-- `reports/technical_report.pdf`: comprehensive 17-page technical report in English.
-- `presentation/Part1_EDA_Presentation.pptx` & `presentation/slides.pdf`: 15-minute defense presentation slides.
+- `reports/technical_report.pdf`: academic technical report in English (5 pages).
+- `presentation/slides.pdf`: 15-minute defense presentation slides.
 
 ## Team
 
