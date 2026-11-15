@@ -1,9 +1,0 @@
-model_id,model_group,cv_repetition,cv_fold,config_rank,is_selected,hyperparameter,value
-ridge_pm25,G1,0,0,1,True,alpha,1.0
-lasso_pm25,G1,0,0,1,True,alpha,0.1
-elasticnet_pm25,G2,0,0,1,True,alpha,0.1
-elasticnet_pm25,G2,0,0,1,True,l1_ratio,0.5
-rf_pm25,G6,0,0,1,True,n_estimators,100
-rf_pm25,G6,0,0,1,True,max_depth,12
-xgb_pm25,G8,0,0,1,True,n_estimators,100
-xgb_pm25,G8,0,0,1,True,learning_rate,0.1
